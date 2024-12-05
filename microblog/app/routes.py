@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Home page route """
+from flask import render_template
 from app import app
 
 @app.route('/')
 @app.route('/index')
 def index():
-    return "Hello, World!"
+    user = {'username': 'Mercy'}
+    return render_template('index.html', title='Home', user=user)
