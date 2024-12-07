@@ -78,6 +78,17 @@ class User(UserMixin, db.Model):
             self.following.select().subquery())
         return db.session.scalar(query)
 
+     def following_posts(self):
+        Author = so.aliased(User)
+        Follower = so.aliased(User)
+        return (
+            sa.select(Post)
+            .join(Post.author.of_type(Author))
+            .join(Author.followers.of_type(Follower))
+            .where(Follower.id == self.id)
+            .order_by(Post.timestamp.desc())
+        )
+
 
 @login.user_loader
 def load_user(id):
@@ -95,4 +106,4 @@ class Post(db.Model):
     author: so.Mapped[User] = so.relationship(back_populates='posts')
 
     def __repr__(self):
-        return '<Post {}>'.format(self.body) 
+        return '<Post {}>'.format(self.body)
